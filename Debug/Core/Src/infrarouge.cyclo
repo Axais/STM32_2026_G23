@@ -1,0 +1,3 @@
+../Core/Src/infrarouge.c:15:6:IR_Init	1
+../Core/Src/infrarouge.c:22:17:IR_Read_Single_Channel	3
+../Core/Src/infrarouge.c:56:6:IR_Read_All	2

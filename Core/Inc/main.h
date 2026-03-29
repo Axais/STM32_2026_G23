@@ -57,16 +57,26 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define MOT_D_DIR2_Pin GPIO_PIN_8
+#define MOT_G_DIR2_Pin GPIO_PIN_0
+#define MOT_G_DIR2_GPIO_Port GPIOC
+#define MOT_G_DIR1_Pin GPIO_PIN_1
+#define MOT_G_DIR1_GPIO_Port GPIOC
+#define MOT_D_DIR2_Pin GPIO_PIN_0
 #define MOT_D_DIR2_GPIO_Port GPIOA
+#define MOT_D_DIR1_Pin GPIO_PIN_1
+#define MOT_D_DIR1_GPIO_Port GPIOA
+#define IR_CS_Pin GPIO_PIN_4
+#define IR_CS_GPIO_Port GPIOA
 #define B1_Pin GPIO_PIN_4
 #define B1_GPIO_Port GPIOC
 #define LD2_Pin GPIO_PIN_0
 #define LD2_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_1
 #define LD3_GPIO_Port GPIOB
-#define MOT_G_DIR1_Pin GPIO_PIN_10
-#define MOT_G_DIR1_GPIO_Port GPIOA
+#define ECHO_Pin GPIO_PIN_6
+#define ECHO_GPIO_Port GPIOC
+#define TRIG_Pin GPIO_PIN_10
+#define TRIG_GPIO_Port GPIOA
 #define JTMS_Pin GPIO_PIN_13
 #define JTMS_GPIO_Port GPIOA
 #define JTCK_Pin GPIO_PIN_14
@@ -75,10 +85,6 @@ void Error_Handler(void);
 #define B2_GPIO_Port GPIOD
 #define B3_Pin GPIO_PIN_1
 #define B3_GPIO_Port GPIOD
-#define MOT_G_DIR2_Pin GPIO_PIN_3
-#define MOT_G_DIR2_GPIO_Port GPIOB
-#define MOT_D_DIR1_Pin GPIO_PIN_5
-#define MOT_D_DIR1_GPIO_Port GPIOB
 #define STLINK_RX_Pin GPIO_PIN_6
 #define STLINK_RX_GPIO_Port GPIOB
 #define STLINK_TX_Pin GPIO_PIN_7

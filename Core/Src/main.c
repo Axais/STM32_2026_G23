@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "memorymap.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb.h"
@@ -26,7 +27,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "motor.h"
+#include "infrarouge.h"
+#include "ultrason.h"
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +52,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+IR_Sensors_t AlphaSensors;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,28 +101,15 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USB_PCD_Init();
   MX_TIM2_Init();
+  MX_TIM1_Init();
+  MX_TIM16_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   // Démarrer les signaux PWM
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-
-  // Définir la direction (Avancer)
-  // Moteur Gauche
-  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
-  // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
-  // Moteur Droit
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-
-  // Appliquer la vitesse (50% de 1000)
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 500);
-
-  HAL_Delay(2000); // Avance pendant 2 secondes
-
-  // 4. Stop
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 0);
+  HCSR04_Init(&htim16);
+  IR_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,7 +119,62 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  /* USER CODE BEGIN WHILE */
+	  /* 1. Lecture des capteurs via SPI */
+	      IR_Read_All(&AlphaSensors);
+
+	      /* 2. Logique de suivi de ligne */
+	      if (AlphaSensors.M == 1) {
+	          // Ligne au centre : on fonce
+	          Motor_Forward(500);
+	      }
+	      else if (AlphaSensors.L1 == 1 || AlphaSensors.L2 == 1) {
+	          // Ligne détectée à gauche : on tourne à gauche
+	          Motor_TurnLeft(400);
+	      }
+	      else if (AlphaSensors.R1 == 1 || AlphaSensors.R2 == 1) {
+	          // Ligne détectée à droite : on tourne à droite
+	          Motor_TurnRight(400);
+	      }
+	      else {
+	          // Si aucune ligne n'est vue (ou problème SPI)
+	          // On avance doucement pour chercher la ligne
+	          Motor_Forward(200);
+	      }
+
+	      HAL_Delay(10); // Fréquence de rafraîchissement
+
+	  /* USER CODE END WHILE */
+
+	  /*
+	  uint32_t Distance;
+	  Distance = HCSR04_Read();
+
+	  // Moteur Droit
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+
+	  // Moteur Gauche
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+
+
+	  if (Distance < 15) // Si un obstacle est à moins de 15cm
+	  {
+		  // STOP les moteurs (TIM2 configuré précédemment)
+	      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+	      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);
+	  } else
+	      {
+		  	  IR_Follow_Line_Routine();
+		 	  HAL_Delay(10);
+	      }
+
+	  HAL_Delay(100); // Petite pause pour ne pas saturer le capteur
+
+	  */
   }
+
   /* USER CODE END 3 */
 }
 

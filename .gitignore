@@ -1,0 +1,12 @@
+Debug/
+Release/
+bin/
+obj/
+*.o
+*.d
+*.elf
+*.list
+*.map
+*.su
+*.cyclo
+.settings/
