@@ -145,21 +145,16 @@ L'algorithme de suivi de ligne fonctionne sur les cas nominaux.
 
 ---
 
-## Limites identifiées et pistes
+## Perspectives
 
-Le rapport comporte une analyse critique du firmware. Les points principaux :
+Deux évolutions se dégagent du travail réalisé. D'abord un correcteur
+proportionnel, voire PID, pour le suivi de ligne : la position pondérée des cinq
+capteurs infrarouges fournit une erreur continue exploitable, là où la décision
+actuelle en tout-ou-rien provoque des oscillations en virage. Ensuite l'activation
+du **BLE 5.0** du STM32WB55, qui permettrait de régler seuils, vitesses et gains
+sans reflasher la carte.
 
-| Point | Conséquence | Piste |
-|---|---|---|
-| `SPI_DATASIZE_4BIT` dans `spi.c` au lieu de 8 bits | les octets transmis au TLC1543 sont tronqués, la reconstruction des valeurs 10 bits peut être décalée | passer sur `SPI_DATASIZE_8BIT` dans le `.ioc` et régénérer (le prescaler, lui, est bien à 128 → 500 kHz) |
-| `HAL_Delay(0.01)` sur l'impulsion TRIG | l'argument est tronqué à 0 : l'impulsion est quasi nulle | générer les 10 µs avec TIM16 |
-| Attente active sans timeout sur ECHO | blocage complet si le capteur est débranché | timeout de 30 ms sur TIM16 |
-| Absence de lecture d'amorçage du TLC1543 | premier canal invalide au démarrage | *dummy read* à l'initialisation |
-| Décision en tout-ou-rien sur les capteurs IR | oscillations en virage | erreur continue par position pondérée des 5 capteurs, puis correcteur proportionnel |
-
-Deux perspectives plus larges : un correcteur PID pour le suivi de ligne, et
-l'activation du **BLE 5.0** du STM32WB55 pour régler les paramètres (seuils,
-vitesses, gains) sans reflasher.
+L'analyse critique complète du firmware figure dans le rapport.
 
 ---
 
